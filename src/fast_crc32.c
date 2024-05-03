@@ -78,14 +78,13 @@ static const uint32_t crc32b_table[256] = {
     0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D,  // 248 [0xF8 .. 0xFF]
 };
 
-uint32_t crc32a_bitwise(uint8_t* buff, uint16_t len)
+uint32_t crc32a_bitwise(uint8_t* buff, size_t len)
 {
     const uint8_t s = 8;
     const uint8_t hs = CRC32_BITS - 8;
     uint32_t crc = -1;
 
-    for(uint16_t i = 0; i < len; i++)
-    {
+    for(size_t i = 0; i < len; i++) {
         crc = crc ^ ((uint32_t)buff[i] << hs);
 
         for(uint8_t j = 0; j < s; j++) {
@@ -99,12 +98,12 @@ uint32_t crc32a_bitwise(uint8_t* buff, uint16_t len)
     return ~crc;
 }
 
-uint32_t crc32b_bitwise(uint8_t* buff, uint16_t len)
+uint32_t crc32b_bitwise(uint8_t* buff, size_t len)
 {
     const uint8_t s = 8;
     uint32_t crc = -1;
 
-    for(uint16_t i = 0; i < len; i++) {
+    for(size_t i = 0; i < len; i++) {
         crc = crc ^ buff[i];
 
         for(uint16_t j = 0; j < s; j++) {
@@ -114,19 +113,21 @@ uint32_t crc32b_bitwise(uint8_t* buff, uint16_t len)
                 crc = crc >> 1;
         }
     }
+
     return ~crc;
 }
 
-uint32_t crc32a_lookup_table(uint8_t* buff, uint32_t len)
+uint32_t crc32a_lookup_table(uint8_t* buff, size_t len)
 {
     const uint8_t s = 8;
     const uint8_t hs = CRC32_BITS - 8;
     uint32_t crc = -1;
 
-    for(uint32_t i = 0; i < len; i++) {
+    for(size_t i = 0; i < len; i++) {
         crc = crc ^ buff[i] << hs;
         crc = (crc << s) ^ crc32a_table[(crc >> hs) & 0xFF];
     }
+
     return ~crc;
 }
 
@@ -139,17 +140,17 @@ uint32_t crc32b_lookup_table(uint8_t* buff, uint16_t len)
         crc = crc ^ buff[i];
         crc = crc32b_table[crc & 0xFF] ^ (crc >> s);
     }
+
     return ~crc;
 }
 
-uint32_t crc32a_fast_bytewise(uint8_t* buff, uint32_t len)
+uint32_t crc32a_fast_bytewise(uint8_t* buff, size_t len)
 {
     const uint8_t s = 8;
     const uint8_t hs = CRC32_BITS - s;
     uint32_t crc = -1;
 
-    for(uint32_t i = 0; i < len; i++)
-    {
+    for(size_t i = 0; i < len; i++) {
         uint32_t temp = buff[i] ^ (crc >> hs);
 
         uint32_t temp26 = temp << hs;
@@ -173,12 +174,12 @@ uint32_t crc32a_fast_bytewise(uint8_t* buff, uint32_t len)
     return ~crc;
 }
 
-uint32_t crc32b_fast_bytewise(uint8_t* buff, uint32_t len)
+uint32_t crc32b_fast_bytewise(uint8_t* buff, size_t len)
 {
     const uint8_t s = 8;
     uint32_t crc = -1;
 
-    for(uint32_t i = 0; i < len; i++) {
+    for(size_t i = 0; i < len; i++) {
         uint32_t temp = buff[i] ^ (crc & 0xFF);
 
         uint32_t temp8 = temp;
@@ -201,13 +202,13 @@ uint32_t crc32b_fast_bytewise(uint8_t* buff, uint32_t len)
     return ~crc;
 }
 
-uint32_t crc32a_fast_nibblewise(uint8_t* buff, uint32_t len)
+uint32_t crc32a_fast_nibblewise(uint8_t* buff, size_t len)
 {
     const uint8_t s = 4;
     const uint8_t hs = CRC32_BITS - s;
     uint32_t crc = -1;
 
-    for(uint32_t i = 0; i < len; i++) {
+    for(size_t i = 0; i < len; i++) {
         uint32_t temp = (buff[i]>> s) ^ (crc >> hs);
         temp = (temp << 26) ^ (temp << 23) ^ (temp << 22) ^ (temp << 16) ^
                (temp << 12) ^ (temp << 11) ^ (temp << 10) ^ (temp << 8) ^
@@ -227,13 +228,13 @@ uint32_t crc32a_fast_nibblewise(uint8_t* buff, uint32_t len)
     return ~crc;
 }
 
-uint32_t crc32b_fast_nibblewise(uint8_t* buff, uint32_t len)
+uint32_t crc32b_fast_nibblewise(uint8_t* buff, size_t len)
 {
     const uint8_t s = 4;
     const uint8_t hs = CRC32_BITS - s;
     uint32_t crc = -1;
 
-    for(uint32_t i = 0; i < len; i++) {
+    for(size_t i = 0; i < len; i++) {
         uint32_t temp = ((buff[i]) ^ (crc & 0x0F)) << hs;
         temp = (temp >> 26) ^ (temp >> 23) ^ (temp >> 22) ^ (temp >> 16) ^
                (temp >> 12) ^ (temp >> 11) ^ (temp >> 10) ^ (temp >> 8) ^
